@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const socketIOClient = require("socket.io-client");
 const path = require("path");
+const http = require("http");
 
 const socket = socketIOClient("https://timerseries.onrender.com"); // Replace with your server URL
 
@@ -51,9 +52,16 @@ function generateAndEmitData() {
     .map((message) => `${message.iv}|${message.encryptedData}`)
     .join("|");
 
-  socket.emit("data", messageString); // Emit data using the 'data' event
+  socket.emit("data", messageString);
 
   console.log(`Emitted ${numberOfMessages} encrypted messages.`);
 }
+
+const server = http.createServer(); // Create an HTTP server
+const PORT = process.env.PORT || 3000; // Use the environment port or default to 3000
+
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 setInterval(generateAndEmitData, 10000); // Emit data every 10 seconds
