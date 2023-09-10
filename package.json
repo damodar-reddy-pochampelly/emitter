@@ -11,5 +11,9 @@
   "description": "",
   "dependencies": {
     "socket.io-client": "^4.7.2"
-  }
+  },
+  "engines": {
+  "node": "14.18.2"  // Use the appropriate Node.js version
+}
+
 }
