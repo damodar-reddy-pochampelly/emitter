@@ -6,7 +6,7 @@ const http = require("http");
 
 const secretKey = crypto.randomBytes(32).toString("hex"); // Generate a random secret key
 
-const socket = socketIOClient("https://your-listener-url.com"); // Replace with your listener's URL
+const socket = socketIOClient("https://timerseries.onrender.com"); // Replace with your listener's URL
 
 // Load data from data.json
 const dataPath = path.join(__dirname, "data.json");
