@@ -4,7 +4,9 @@ const socketIOClient = require("socket.io-client");
 const path = require("path");
 const http = require("http");
 
-const socket = socketIOClient("https://timerseries.onrender.com"); // Replace with your server URL
+const secretKey = crypto.randomBytes(32).toString("hex"); // Generate a random secret key
+
+const socket = socketIOClient("https://timerseries.onrender.com"); // Replace with your listener's URL
 
 // Load data from data.json
 const dataPath = path.join(__dirname, "data.json");
@@ -42,7 +44,6 @@ function generateAndEmitData() {
   const messages = [];
   for (let i = 0; i < numberOfMessages; i++) {
     const randomData = generateRandomData();
-    const secretKey = crypto.randomBytes(32).toString("hex"); // Generate a random secret key
     const encryptedData = encryptData(randomData, secretKey);
 
     messages.push(encryptedData);
