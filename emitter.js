@@ -16,7 +16,7 @@ function generateHash(data) {
   return hash.digest("hex");
 }
 
-const socket = io.connect("http://localhost:3000"); // Connect to the listener service
+const socket = io.connect("https://timerseries.onrender.com"); // Connect to the listener service
 
 // Function to generate and emit the encrypted message stream
 function emitEncryptedMessages() {
