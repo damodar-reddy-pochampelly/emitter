@@ -16,7 +16,7 @@ const data = jsonData.data;
 function encryptData(dataObj, key) {
   const iv = crypto.randomBytes(16); // Initialization Vector
   const cipher = crypto.createCipheriv(
-    "aes-256-ctr",
+    "aes-256-gcm",
     Buffer.from(key, "hex"),
     iv
   );
@@ -25,9 +25,12 @@ function encryptData(dataObj, key) {
     cipher.final(),
   ]);
 
+  const authTag = cipher.getAuthTag();
+
   return {
     iv: iv.toString("hex"),
     encryptedData: encrypted.toString("hex"),
+    authTag: authTag.toString("hex"),
   };
 }
 
@@ -50,10 +53,12 @@ function generateAndEmitData() {
   }
 
   const messageString = messages
-    .map((message) => `${message.iv}|${message.encryptedData}`)
+    .map(
+      (message) => `${message.iv}|${message.encryptedData}|${message.authTag}`
+    )
     .join("|");
 
-  // Emit the message as an object with data and secretKey
+  // Emit the message as an object with data, secretKey and authTag
   socket.emit("data", { data: messageString, secretKey });
 
   console.log(`Emitted ${numberOfMessages} encrypted messages.`);
