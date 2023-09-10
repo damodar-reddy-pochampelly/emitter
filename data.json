@@ -1,0 +1,54 @@
+{
+  "data": [
+    {
+      "name": "Amit Kumar",
+      "origin": "Delhi",
+      "destination": "Mumbai"
+    },
+    {
+      "name": "Priya Sharma",
+      "origin": "Mumbai",
+      "destination": "Bangalore"
+    },
+    {
+      "name": "Rajesh Singh",
+      "origin": "Kolkata",
+      "destination": "Chennai"
+    },
+    {
+      "name": "Neha Patel",
+      "origin": "Ahmedabad",
+      "destination": "Hyderabad"
+    },
+    {
+      "name": "Vikram Verma",
+      "origin": "Bangalore",
+      "destination": "Delhi"
+    },
+    {
+      "name": "Sarita Gupta",
+      "origin": "Chennai",
+      "destination": "Pune"
+    },
+    {
+      "name": "Rahul Yadav",
+      "origin": "Hyderabad",
+      "destination": "Kolkata"
+    },
+    {
+      "name": "Pooja Mishra",
+      "origin": "Pune",
+      "destination": "Ahmedabad"
+    },
+    {
+      "name": "Manish Agarwal",
+      "origin": "Mumbai",
+      "destination": "Delhi"
+    },
+    {
+      "name": "Anjali Joshi",
+      "origin": "Delhi",
+      "destination": "Chennai"
+    }
+  ]
+}
