@@ -16,7 +16,7 @@ function generateHash(data) {
   return hash.digest("hex");
 }
 
-const socket = io.connect("https://timerseries.onrender.com"); // Connect to the listener service
+const socket = io.connect("http://localhost:3000"); // Connect to the listener service
 
 // Function to generate and emit the encrypted message stream
 function emitEncryptedMessages() {
@@ -38,13 +38,16 @@ function emitEncryptedMessages() {
 
     const secret_key = generateHash(JSON.stringify(originalMessage));
 
-    const encryptedMessage = crypto
-      .createCipher("aes-256-ctr", "your_pass_key_here")
-      .update(
-        JSON.stringify({ ...originalMessage, secret_key }),
-        "utf8",
-        "hex"
-      );
+    const encryptionKey = crypto.randomBytes(16); // Generate a random encryption key
+    const iv = crypto.randomBytes(16); // Generate a random IV
+
+    const cipher = crypto.createCipheriv("aes-256-ctr", encryptionKey, iv);
+    let encryptedMessage = cipher.update(
+      JSON.stringify({ ...originalMessage, secret_key }),
+      "utf8",
+      "hex"
+    );
+    encryptedMessage += cipher.final("hex");
 
     messages.push(encryptedMessage);
   }
