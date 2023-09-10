@@ -53,14 +53,13 @@ function generateAndEmitData() {
     .map((message) => `${message.iv}|${message.encryptedData}`)
     .join("|");
 
-  // Emit both data and secretKey as an object
+  // Emit the message as an object with data and secretKey
   socket.emit("data", { data: messageString, secretKey });
 
   console.log(`Emitted ${numberOfMessages} encrypted messages.`);
 }
 
 const server = http.createServer(); // Create an HTTP server
-
 const PORT = process.env.PORT || 3000; // Use the environment port or default to 3000
 
 server.listen(PORT, () => {
