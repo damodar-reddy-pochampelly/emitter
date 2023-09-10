@@ -49,11 +49,12 @@ function generateAndEmitData() {
     messages.push(encryptedData);
   }
 
+  const messageString = messages
+    .map((message) => `${message.iv}|${message.encryptedData}`)
+    .join("|");
+
   // Emit the message as an object with data and secretKey
-  socket.emit("data", {
-    messages, // Pass an array of encrypted messages
-    secretKey,
-  });
+  socket.emit("data", { data: messageString, secretKey });
 
   console.log(`Emitted ${numberOfMessages} encrypted messages.`);
 }
