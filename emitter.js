@@ -38,7 +38,7 @@ function emitEncryptedMessages() {
 
     const secret_key = generateHash(JSON.stringify(originalMessage));
 
-    const encryptionKey = crypto.randomBytes(16); // Generate a random encryption key
+    const encryptionKey = crypto.randomBytes(32); // Generate a 32-byte encryption key
     const iv = crypto.randomBytes(16); // Generate a random IV
 
     const cipher = crypto.createCipheriv("aes-256-ctr", encryptionKey, iv);
