@@ -1,74 +1,60 @@
-const crypto = require("crypto");
 const fs = require("fs");
-const socketIOClient = require("socket.io-client");
-const path = require("path");
-const http = require("http");
+const io = require("socket.io-client");
+const crypto = require("crypto");
 
-const socket = socketIOClient("http://timerseries.onrender.com"); // Replace with your server URL
+const data = require("./data.json");
 
-// Load data from data.json
-const dataPath = path.join(__dirname, "data.json");
-const jsonData = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
-
-// Extract data array from JSON
-const data = jsonData.data;
-
-function encryptData(dataObj, key) {
-  const iv = crypto.randomBytes(16); // Initialization Vector
-  const cipher = crypto.createCipheriv(
-    "aes-256-gcm",
-    Buffer.from(key, "hex"),
-    iv
-  );
-  const encrypted = Buffer.concat([
-    cipher.update(JSON.stringify(dataObj), "utf8"),
-    cipher.final(),
-  ]);
-
-  const authTag = cipher.getAuthTag();
-
-  return {
-    iv: iv.toString("hex"),
-    encryptedData: encrypted.toString("hex"),
-    authTag: authTag.toString("hex"),
-  };
+// Function to generate a random integer within a range
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateRandomData() {
-  const randomIndex = Math.floor(Math.random() * data.length);
-  return data[randomIndex];
+// Function to generate a SHA-256 hash
+function generateHash(data) {
+  const hash = crypto.createHash("sha256");
+  hash.update(data);
+  return hash.digest("hex");
 }
 
-function generateAndEmitData() {
-  const numberOfMessages = Math.floor(Math.random() * 451) + 49; // Random number between 49 and 499
+const socket = io.connect("http://localhost:3000"); // Connect to the listener service
 
+// Function to generate and emit the encrypted message stream
+function emitEncryptedMessages() {
   const messages = [];
-  const secretKey = crypto.randomBytes(32).toString("hex"); // Generate a random secret key
+
+  // Generate a random number of messages (between 49 and 499)
+  const numberOfMessages = getRandomInt(49, 499);
 
   for (let i = 0; i < numberOfMessages; i++) {
-    const randomData = generateRandomData();
-    const encryptedData = encryptData(randomData, secretKey);
+    const name = data.names[getRandomInt(0, data.names.length - 1)];
+    const origin = data.cities[getRandomInt(0, data.cities.length - 1)];
+    const destination = data.cities[getRandomInt(0, data.cities.length - 1)];
 
-    messages.push(encryptedData);
+    const originalMessage = {
+      name,
+      origin,
+      destination,
+    };
+
+    const secret_key = generateHash(JSON.stringify(originalMessage));
+
+    const encryptedMessage = crypto
+      .createCipher("aes-256-ctr", "your_pass_key_here")
+      .update(
+        JSON.stringify({ ...originalMessage, secret_key }),
+        "utf8",
+        "hex"
+      );
+
+    messages.push(encryptedMessage);
   }
 
-  const messageString = messages
-    .map(
-      (message) => `${message.iv}|${message.encryptedData}|${message.authTag}`
-    )
-    .join("|");
+  const messageStream = messages.join("|");
+  socket.emit("encryptedMessageStream", messageStream);
 
-  // Emit the message as an object with data, secretKey and authTag
-  socket.emit("data", { data: messageString, secretKey });
-
-  console.log(`Emitted ${numberOfMessages} encrypted messages.`);
+  setTimeout(emitEncryptedMessages, 10000); // Emit messages every 10 seconds
 }
 
-const server = http.createServer(); // Create an HTTP server
-const PORT = process.env.PORT || 3000; // Use the environment port or default to 3000
-
-server.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+socket.on("connect", () => {
+  emitEncryptedMessages(); // Start emitting messages when connected to the listener
 });
-
-setInterval(generateAndEmitData, 10000); // Emit data every 10 seconds
