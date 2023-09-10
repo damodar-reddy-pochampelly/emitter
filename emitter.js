@@ -4,7 +4,7 @@ const socketIOClient = require("socket.io-client");
 const path = require("path");
 const http = require("http");
 
-const socket = socketIOClient("https://timerseries.onrender.com"); // Replace with your server URL
+const socket = socketIOClient("http://timerseries.onrender.com"); // Replace with your server URL
 
 // Load data from data.json
 const dataPath = path.join(__dirname, "data.json");
@@ -49,12 +49,11 @@ function generateAndEmitData() {
     messages.push(encryptedData);
   }
 
-  const messageString = messages
-    .map((message) => `${message.iv}|${message.encryptedData}`)
-    .join("|");
-
   // Emit the message as an object with data and secretKey
-  socket.emit("data", { data: messageString, secretKey });
+  socket.emit("data", {
+    messages, // Pass an array of encrypted messages
+    secretKey,
+  });
 
   console.log(`Emitted ${numberOfMessages} encrypted messages.`);
 }
