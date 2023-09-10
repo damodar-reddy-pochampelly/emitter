@@ -40,9 +40,10 @@ function generateAndEmitData() {
   const numberOfMessages = Math.floor(Math.random() * 451) + 49; // Random number between 49 and 499
 
   const messages = [];
+  const secretKey = crypto.randomBytes(32).toString("hex"); // Generate a random secret key
+
   for (let i = 0; i < numberOfMessages; i++) {
     const randomData = generateRandomData();
-    const secretKey = crypto.randomBytes(32).toString("hex"); // Generate a random secret key
     const encryptedData = encryptData(randomData, secretKey);
 
     messages.push(encryptedData);
