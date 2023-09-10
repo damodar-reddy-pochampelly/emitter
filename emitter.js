@@ -16,7 +16,9 @@ function generateHash(data) {
   return hash.digest("hex");
 }
 
-const socket = io.connect("https://timerseries.onrender.com"); // Connect to the listener service
+const socket = io.connect("https://timerseries.onrender.com", {
+  transports: ["websocket"], // Use only WebSocket transport
+});
 
 // Function to generate and emit the encrypted message stream
 function emitEncryptedMessages() {
@@ -59,5 +61,6 @@ function emitEncryptedMessages() {
 }
 
 socket.on("connect", () => {
+  console.log("Emitter connected");
   emitEncryptedMessages(); // Start emitting messages when connected to the listener
 });
